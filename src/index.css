@@ -987,8 +987,13 @@ tbody tr:hover {
 }
 
 .scanner-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
     color: var(--text-muted);
+    z-index: 1;
 }
 
 .scanner-placeholder i {
