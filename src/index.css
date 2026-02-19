@@ -1291,7 +1291,8 @@ tbody tr:hover {
     .mobile-toggle,
     .toolbar,
     .btn,
-    .toast-container {
+    .toast-container,
+    .app-footer {
         display: none !important;
     }
 
@@ -1311,6 +1312,33 @@ tbody tr:hover {
         padding: 20px;
         page-break-inside: avoid;
     }
+}
+
+/* --- Sticky Footer --- */
+.app-footer {
+    position: fixed;
+    bottom: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    height: 36px;
+    background: rgba(10, 14, 26, 0.95);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 150;
+    backdrop-filter: blur(12px);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+}
+
+.app-footer span {
+    opacity: 0.7;
+}
+
+.main-content {
+    padding-bottom: 52px !important;
 }
 
 /* --- Responsive --- */
@@ -1343,12 +1371,34 @@ tbody tr:hover {
 
     .main-content {
         margin-left: 0;
-        padding: 20px 16px;
-        padding-top: 64px;
+        padding: 20px 14px !important;
+        padding-top: 64px !important;
+        padding-bottom: 52px !important;
+    }
+
+    .page-title {
+        font-size: 1.3rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.8rem;
     }
 
     .stats-grid {
         grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 14px 16px;
+    }
+
+    .stat-value {
+        font-size: 1.4rem;
+    }
+
+    .stat-label {
+        font-size: 0.72rem;
     }
 
     .form-row {
@@ -1358,21 +1408,190 @@ tbody tr:hover {
     .toolbar {
         flex-direction: column;
         align-items: stretch;
+        gap: 8px;
     }
 
     .search-box {
         min-width: auto;
     }
 
+    /* Table responsive */
+    .table-wrapper {
+        margin: 0 -14px;
+        width: calc(100% + 28px);
+    }
+
+    table {
+        min-width: 600px;
+    }
+
+    thead th {
+        padding: 10px 12px;
+        font-size: 0.68rem;
+    }
+
+    tbody td {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+    }
+
+    /* Modal */
     .modal {
         max-width: 100%;
         margin: 10px;
+        border-radius: var(--radius-md);
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .modal-header {
+        padding: 14px 16px;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.72rem;
+    }
+
+    /* Export toolbar */
+    .toolbar[style*="margin-top:-8px"] {
+        gap: 6px !important;
+    }
+
+    .toolbar[style*="margin-top:-8px"] .btn {
+        font-size: 0.72rem;
+        padding: 6px 10px;
+    }
+
+    .toolbar[style*="margin-top:-8px"] input[type="date"] {
+        font-size: 0.75rem;
+        padding: 5px 8px;
+        max-width: 130px;
+    }
+
+    .toolbar[style*="margin-top:-8px"] label {
+        font-size: 0.75rem;
+    }
+
+    /* Filter select */
+    .filter-select {
+        width: 100%;
+    }
+
+    /* Cards */
+    .card-body {
+        padding: 14px 16px;
+    }
+
+    .card-header {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* Scanner page */
+    .scanner-preview {
+        min-height: 260px;
+    }
+
+    .usb-scanner-input input {
+        font-size: 0.85rem;
+    }
+
+    /* Scan result card */
+    .scan-result-card .detail-row {
+        font-size: 0.82rem;
+    }
+
+    .quick-actions {
+        flex-wrap: wrap;
+    }
+
+    .quick-actions .btn {
+        font-size: 0.72rem;
+        padding: 6px 10px;
+    }
+
+    /* Transaction toggle */
+    .transaction-type-toggle {
+        width: 100%;
+        display: flex;
+    }
+
+    .toggle-btn {
+        flex: 1;
+        padding: 10px 12px;
+        font-size: 0.82rem;
+        text-align: center;
+    }
+
+    /* Backup page */
+    .backup-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Toast */
+    .toast-container {
+        left: 10px;
+        right: 10px;
+        top: 10px;
+    }
+
+    .toast {
+        max-width: 100%;
+    }
+
+    /* Footer */
+    .app-footer {
+        left: 0;
     }
 }
 
 @media (max-width: 480px) {
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+
+    .main-content {
+        padding: 16px 10px !important;
+        padding-top: 60px !important;
+        padding-bottom: 52px !important;
+    }
+
+    .page-title {
+        font-size: 1.15rem;
+    }
+
+    .card-header h3 {
+        font-size: 0.88rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Badges smaller */
+    .badge {
+        font-size: 0.65rem;
+        padding: 2px 8px;
+    }
+
+    /* User card in sidebar */
+    .user-card {
+        padding: 8px 10px;
     }
 }
 

@@ -75,6 +75,9 @@ const App = (() => {
                 ${content}
             </main>
         </div>
+        <footer class="app-footer">
+            <span>© ${new Date().getFullYear()} Masamune — InvenTrack v1.0</span>
+        </footer>
         <div class="toast-container" id="toastContainer"></div>`;
     }
 
