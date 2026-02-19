@@ -4,6 +4,40 @@ Aplikasi web untuk manajemen inventaris perangkat dengan fitur barcode scanner, 
 
 ---
 
+## 📸 Screenshot
+
+### Dashboard
+![Dashboard](img/screencapture-localhost-3000-2026-02-19-23_11_10.png)
+
+### Manajemen Aset
+![Daftar Aset](img/screencapture-localhost-3000-2026-02-19-23_11_25.png)
+
+### Tambah Aset Baru
+![Tambah Aset](img/screencapture-localhost-3000-2026-02-19-23_12_06.png)
+
+### Label Barcode
+![Label Barcode](img/screencapture-localhost-3000-2026-02-19-23_11_39.png)
+
+### Scan Aset (Kamera + Hasil)
+![Scan Aset](img/screencapture-localhost-3000-2026-02-19-23_34_36.png)
+
+### Transaksi — Check-out (Ambil)
+![Check-out](img/screencapture-localhost-3000-2026-02-19-23_35_03.png)
+
+### Transaksi — Check-in (Kembali)
+![Check-in](img/screencapture-localhost-3000-2026-02-19-23_35_14.png)
+
+### Riwayat Transaksi
+![Riwayat](img/screencapture-localhost-3000-2026-02-19-23_35_39.png)
+
+### Kelola User (Admin)
+![Kelola User](img/screencapture-localhost-3000-2026-02-19-23_36_08.png)
+
+### Backup & Restore (Admin)
+![Backup](img/screencapture-localhost-3000-2026-02-19-23_36_31.png)
+
+---
+
 ## 📋 Fitur
 
 - **Dashboard** — Statistik stok, grafik pergerakan barang, alert stok menipis
