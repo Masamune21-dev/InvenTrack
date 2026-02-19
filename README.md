@@ -46,6 +46,8 @@ Aplikasi web untuk manajemen inventaris perangkat dengan fitur barcode scanner, 
 - **Check-in / Check-out** — Catat pengambilan & pengembalian barang
 - **Riwayat Transaksi** — Log lengkap semua pergerakan
 - **Manajemen User** — Kelola akun pengguna (admin only)
+- **Export Data** — Export PDF & Excel untuk daftar aset dan riwayat transaksi dengan filter tanggal
+- **Backup & Restore** — Download database, export JSON, kirim via email, dan restore dari file backup
 - **RBAC** — Admin (akses penuh) vs Staff (scan & transaksi)
 - **Security** — Rate limiting, security headers, JWT authentication
 
