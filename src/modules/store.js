@@ -4,7 +4,9 @@
    ============================ */
 
 const Store = (() => {
-    const API_BASE = '/api';
+    // Auto-detect sub-path (e.g. '/inventrack' when proxied, '' when direct)
+    const _subpath = window.location.pathname.replace(/\/$/, '').replace(/#.*$/, '');
+    const API_BASE = _subpath + '/api';
 
     // --- Helpers ---
     function getToken() {

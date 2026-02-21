@@ -4,6 +4,7 @@
 
 const App = (() => {
     let currentPage = null;
+    let layoutResizeHandler = null;
 
     const routes = {
         '/login': { page: LoginPage, title: 'Login', public: true },
@@ -15,6 +16,20 @@ const App = (() => {
         '/users': { page: UsersPage, title: 'Manajemen User', icon: 'fa-users-gear', adminOnly: true },
         '/backup': { page: BackupPage, title: 'Backup', icon: 'fa-shield-halved', adminOnly: true }
     };
+
+    function isCompactViewport() {
+        const visualWidth = window.innerWidth || 0;
+        const screenWidth = window.screen?.width || visualWidth;
+        const isTouchDevice = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+        return isTouchDevice || Math.min(visualWidth, screenWidth) <= 1024;
+    }
+
+    function unbindLayoutEvents() {
+        if (layoutResizeHandler) {
+            window.removeEventListener('resize', layoutResizeHandler);
+            layoutResizeHandler = null;
+        }
+    }
 
     function getLayout(content, activeRoute) {
         const user = Auth.getCurrentUser();
@@ -85,6 +100,8 @@ const App = (() => {
         const path = hash.replace('#', '').split('?')[0] || '/dashboard';
         const route = routes[path];
 
+        unbindLayoutEvents();
+
         // Destroy previous page
         if (currentPage && currentPage.destroy) currentPage.destroy();
 
@@ -136,26 +153,38 @@ const App = (() => {
         const toggle = document.getElementById('mobileToggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
+        const setSidebarOpen = (open) => {
+            sidebar?.classList.toggle('open', open);
+            overlay?.classList.toggle('open', open);
+            toggle?.classList.toggle('is-hidden', open);
+            document.body.classList.toggle('sidebar-open', open);
+        };
 
         toggle?.addEventListener('click', () => {
-            sidebar?.classList.toggle('open');
-            overlay?.classList.toggle('open');
+            const isOpen = sidebar?.classList.contains('open') || false;
+            setSidebarOpen(!isOpen);
         });
 
         overlay?.addEventListener('click', () => {
-            sidebar?.classList.remove('open');
-            overlay?.classList.remove('open');
+            setSidebarOpen(false);
         });
 
         // Close sidebar on nav click (mobile)
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    sidebar?.classList.remove('open');
-                    overlay?.classList.remove('open');
+                if (isCompactViewport()) {
+                    setSidebarOpen(false);
                 }
             });
         });
+
+        layoutResizeHandler = () => {
+            if (!isCompactViewport()) setSidebarOpen(false);
+        };
+        window.addEventListener('resize', layoutResizeHandler);
+
+        // Always start from a closed sidebar when route changes.
+        setSidebarOpen(false);
     }
 
     function showToast(message, type = 'info', duration = 3500) {
