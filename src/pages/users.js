@@ -105,15 +105,15 @@ const UsersPage = (() => {
                     <td>
                         <div style="display:flex;align-items:center;gap:10px">
                             <div class="user-avatar" style="width:36px;height:36px;min-width:36px;font-size:0.75rem">
-                                ${u.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2)}
+                                ${escapeHtml(u.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2))}
                             </div>
                             <div>
-                                <div style="font-weight:600;color:var(--text-primary)">${u.name}</div>
+                                <div style="font-weight:600;color:var(--text-primary)">${escapeHtml(u.name)}</div>
                                 ${isSelf ? '<span style="font-size:0.7rem;color:var(--accent-primary)">(Anda)</span>' : ''}
                             </div>
                         </div>
                     </td>
-                    <td><code style="font-size:0.82rem;color:var(--accent-info);background:rgba(6,182,212,0.1);padding:2px 8px;border-radius:4px">${u.username}</code></td>
+                    <td><code style="font-size:0.82rem;color:var(--accent-info);background:rgba(6,182,212,0.1);padding:2px 8px;border-radius:4px">${escapeHtml(u.username)}</code></td>
                     <td><span class="badge ${roleBadge}">${roleIcon} ${roleLabel}</span></td>
                     <td>
                         <div style="display:flex;gap:4px">
@@ -130,7 +130,7 @@ const UsersPage = (() => {
                 </tr>`;
             }).join('');
         } catch (e) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--accent-danger);padding:24px">Gagal memuat: ${e.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--accent-danger);padding:24px">Gagal memuat: ${escapeHtml(e.message)}</td></tr>`;
         }
     }
 
@@ -237,7 +237,7 @@ const UsersPage = (() => {
 
         const confirmed = await Dialog.confirm({
             title: 'Hapus User?',
-            message: `User <strong>"${user.name}"</strong> akan dihapus.<br>User ini tidak akan bisa login lagi.`,
+            message: `User <strong>"${escapeHtml(user.name)}"</strong> akan dihapus.<br>User ini tidak akan bisa login lagi.`,
             type: 'delete',
             confirmText: 'Ya, Hapus',
             cancelText: 'Batal'

@@ -1,9 +1,16 @@
-const express = require('express');
 const bcrypt = require('bcryptjs');
 const { queryAll, queryOne, execute } = require('../db');
 const { authMiddleware, adminOnly } = require('./auth');
+const { createRouter } = require('../utils');
 
-const router = express.Router();
+const router = createRouter();
+
+const ROLES = ['admin', 'staff'];
+const optionalString = (v) => v === undefined || v === null || typeof v === 'string';
+
+async function countAdmins() {
+    return (await queryOne("SELECT COUNT(*) as count FROM users WHERE role = 'admin'"))?.count || 0;
+}
 
 // All routes require admin
 router.use(authMiddleware);
@@ -28,6 +35,9 @@ router.post('/', async (req, res) => {
 
     if (!username || !password || !name) {
         return res.status(400).json({ error: 'Username, password, dan nama wajib diisi' });
+    }
+    if (![username, password, name].every(v => typeof v === 'string') || !optionalString(role)) {
+        return res.status(400).json({ error: 'Format data user tidak valid' });
     }
     if (password.length < 6) {
         return res.status(400).json({ error: 'Password minimal 6 karakter' });
@@ -57,6 +67,17 @@ router.put('/:id', async (req, res) => {
     if (!user) return res.status(404).json({ error: 'User tidak ditemukan' });
 
     const { username, password, name, role } = req.body;
+
+    if (![username, password, name].every(optionalString)) {
+        return res.status(400).json({ error: 'Format data user tidak valid' });
+    }
+    if (role && !ROLES.includes(role)) {
+        return res.status(400).json({ error: 'Role harus admin atau staff' });
+    }
+    // Jangan sampai tidak ada admin tersisa
+    if (user.role === 'admin' && role === 'staff' && await countAdmins() <= 1) {
+        return res.status(400).json({ error: 'Minimal harus ada satu admin' });
+    }
 
     // Check username uniqueness if changed
     if (username && username !== user.username) {
@@ -92,6 +113,9 @@ router.delete('/:id', async (req, res) => {
     // Prevent deleting self
     if (req.user.id === req.params.id) {
         return res.status(400).json({ error: 'Tidak bisa menghapus akun sendiri' });
+    }
+    if (user.role === 'admin' && await countAdmins() <= 1) {
+        return res.status(400).json({ error: 'Minimal harus ada satu admin' });
     }
 
     await execute('DELETE FROM users WHERE id = ?', [req.params.id]);

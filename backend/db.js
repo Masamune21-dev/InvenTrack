@@ -35,6 +35,19 @@ async function initDb() {
         console.log('🆕 Creating new database');
     }
 
+    createSchema();
+
+    // Seed data
+    seed();
+    saveDb();
+
+    // Auto-save every 30 seconds
+    setInterval(saveDb, 30000);
+
+    return db;
+}
+
+function createSchema() {
     // Enable foreign keys
     db.run('PRAGMA foreign_keys = ON');
 
@@ -85,15 +98,6 @@ async function initDb() {
     db.run('CREATE INDEX IF NOT EXISTS idx_transactions_asset_id ON transactions(asset_id)');
     db.run('CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type)');
     db.run('CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at)');
-
-    // Seed data
-    seed();
-    saveDb();
-
-    // Auto-save every 30 seconds
-    setInterval(saveDb, 30000);
-
-    return db;
 }
 
 function seed() {
@@ -108,6 +112,35 @@ function seed() {
         ['u1', 'admin', bcrypt.hashSync('admin123', 10), 'Administrator', 'admin']);
 
     console.log('✅ Akun admin berhasil dibuat (admin / admin123)');
+}
+
+// Ganti database aktif dengan isi file backup (tanpa restart server).
+// File divalidasi dulu; database lama disimpan sebagai *_pre_restore_*.db.
+async function restoreDb(buffer) {
+    const SQL = await initSqlJs();
+    const candidate = new SQL.Database(buffer);
+    try {
+        const tables = (candidate.exec("SELECT name FROM sqlite_master WHERE type = 'table'")[0]?.values || []).flat();
+        for (const table of ['users', 'assets', 'transactions']) {
+            if (!tables.includes(table)) throw new Error(`Tabel "${table}" tidak ditemukan di file backup`);
+        }
+        const admins = candidate.exec("SELECT COUNT(*) FROM users WHERE role = 'admin'")[0].values[0][0];
+        if (!admins) throw new Error('File backup tidak memiliki akun admin');
+    } catch (e) {
+        candidate.close();
+        throw e;
+    }
+
+    saveDb();
+    if (fs.existsSync(DB_PATH)) {
+        fs.copyFileSync(DB_PATH, DB_PATH.replace(/\.db$/, `_pre_restore_${Date.now()}.db`));
+    }
+
+    const previous = db;
+    db = candidate;
+    createSchema();
+    saveDb();
+    previous?.close();
 }
 
 // Helper functions to wrap sql.js API to mimic better-sqlite3 style
@@ -158,4 +191,4 @@ async function runTransaction(fn) {
     }
 }
 
-module.exports = { initDb, getDb, queryAll, queryOne, execute, runTransaction, saveDb };
+module.exports = { initDb, getDb, queryAll, queryOne, execute, runTransaction, saveDb, restoreDb };

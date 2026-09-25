@@ -44,7 +44,7 @@ const BarcodeModule = (() => {
         return `
             <div class="barcode-label" id="barcode-label-${asset.id}">
                 <svg id="barcode-svg-${asset.id}"></svg>
-                <div class="label-name">${asset.name}</div>
+                <div class="label-name">${escapeHtml(asset.name)}</div>
             </div>
         `;
     }
@@ -55,7 +55,7 @@ const BarcodeModule = (() => {
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Label - ${asset.name}</title>
+                <title>Label - ${escapeHtml(asset.name)}</title>
                 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
                 <style>
                     body { 
@@ -93,11 +93,11 @@ const BarcodeModule = (() => {
             <body>
                 <div class="label">
                     <svg id="barcode"></svg>
-                    <div class="label-name">${asset.name}</div>
-                    <div class="label-loc">${asset.location || ''}</div>
+                    <div class="label-name">${escapeHtml(asset.name)}</div>
+                    <div class="label-loc">${escapeHtml(asset.location)}</div>
                 </div>
                 <script>
-                    JsBarcode("#barcode", "${asset.sku}", {
+                    JsBarcode("#barcode", ${JSON.stringify(String(asset.sku)).replace(/</g, '\\u003c')}, {
                         format: "CODE128",
                         width: 2,
                         height: 60,

@@ -67,7 +67,7 @@ const TransactionsPage = (() => {
                         </div>
                         <div class="form-group">
                             <label class="form-label">Petugas</label>
-                            <input type="text" class="form-input" id="txUser" value="${user ? user.name : ''}" readonly>
+                            <input type="text" class="form-input" id="txUser" value="${user ? escapeHtml(user.name) : ''}" readonly>
                         </div>
                     </div>
 
@@ -110,7 +110,7 @@ const TransactionsPage = (() => {
             const select = document.getElementById('txAsset');
             if (select) {
                 select.innerHTML = '<option value="">-- Pilih Barang --</option>' +
-                    assetsList.map(a => `<option value="${a.id}" ${a.id === preselectedAssetId ? 'selected' : ''}>${a.name} (Stok: ${a.quantity}) — ${a.sku}</option>`).join('');
+                    assetsList.map(a => `<option value="${a.id}" ${a.id === preselectedAssetId ? 'selected' : ''}>${escapeHtml(a.name)} (Stok: ${a.quantity}) — ${escapeHtml(a.sku)}</option>`).join('');
             }
             if (preselectedAssetId) showAssetInfo(preselectedAssetId);
         } catch (e) {

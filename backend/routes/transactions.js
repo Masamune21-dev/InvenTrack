@@ -1,14 +1,15 @@
-const express = require('express');
 const { queryAll, queryOne, execute, runTransaction } = require('../db');
 const { authMiddleware } = require('./auth');
+const { createRouter, nowLocal, queryString } = require('../utils');
 
-const router = express.Router();
+const router = createRouter();
 
 router.use(authMiddleware);
 
 // GET /api/transactions — list with optional filters
 router.get('/', async (req, res) => {
-    const { type, search } = req.query;
+    const type = queryString(req.query.type);
+    const search = queryString(req.query.search);
     let sql = 'SELECT * FROM transactions WHERE 1=1';
     const params = [];
 
@@ -43,7 +44,7 @@ router.get('/', async (req, res) => {
 
 // GET /api/transactions/stats/monthly
 router.get('/stats/monthly', async (req, res) => {
-    const months = parseInt(req.query.months) || 6;
+    const months = Math.min(Math.max(parseInt(req.query.months) || 6, 1), 24);
     const stats = [];
     const now = new Date();
 
@@ -74,6 +75,14 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ error: 'assetId, type, dan quantity wajib diisi' });
     }
 
+    if (typeof assetId !== 'string' || (note !== undefined && note !== null && typeof note !== 'string')) {
+        return res.status(400).json({ error: 'Format data transaksi tidak valid' });
+    }
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+        return res.status(400).json({ error: 'Jumlah harus bilangan bulat minimal 1' });
+    }
+
     if (!['check-in', 'check-out'].includes(type)) {
         return res.status(400).json({ error: 'Type harus check-in atau check-out' });
     }
@@ -86,7 +95,7 @@ router.post('/', async (req, res) => {
     }
 
     const id = 't' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-    const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    const now = nowLocal();
     const userName = req.user.name;
     const userId = req.user.id;
 

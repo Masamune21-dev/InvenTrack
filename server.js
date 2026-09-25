@@ -29,8 +29,10 @@ async function startServer() {
 
     // --- Security Middleware ---
 
-    // Trust proxy (if behind nginx/reverse proxy)
-    app.set('trust proxy', 1);
+    // Trust proxy: default hanya reverse proxy di mesin yang sama (nginx di localhost),
+    // agar X-Forwarded-For dari klien langsung tidak bisa dipalsukan untuk lolos rate limit.
+    // Ubah via TRUST_PROXY di .env bila proxy berada di mesin lain.
+    app.set('trust proxy', process.env.TRUST_PROXY || 'loopback');
 
     // CORS - restrict in production
     app.use(cors({
@@ -112,11 +114,11 @@ async function startServer() {
     });
 
     // --- Static Files ---
-    app.use(express.static(path.join(__dirname), {
-        maxAge: '1d',
-        etag: true,
-        index: 'index.html'
-    }));
+    // Hanya folder frontend yang disajikan. Jangan sajikan root project:
+    // di sana ada data/*.db, .env, dan source backend.
+    const staticOptions = { maxAge: '1d', etag: true };
+    app.use('/src', express.static(path.join(__dirname, 'src'), staticOptions));
+    app.use('/img', express.static(path.join(__dirname, 'img'), staticOptions));
 
     // --- API Routes ---
     const { router: authRouter } = require('./backend/routes/auth');
@@ -143,7 +145,14 @@ async function startServer() {
 
     // Global error handler
     app.use((err, req, res, next) => {
+        if (err.type === 'entity.parse.failed') {
+            return res.status(400).json({ error: 'Format JSON tidak valid' });
+        }
+        if (err.type === 'entity.too.large') {
+            return res.status(413).json({ error: 'Request terlalu besar' });
+        }
         console.error(`[ERROR] ${new Date().toISOString()} - ${err.message}`);
+        if (res.headersSent) return next(err);
         res.status(500).json({ error: 'Terjadi kesalahan server' });
     });
 

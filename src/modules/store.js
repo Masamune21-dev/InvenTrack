@@ -4,9 +4,9 @@
    ============================ */
 
 const Store = (() => {
-    // Auto-detect sub-path (e.g. '/inventrack' when proxied, '' when direct)
-    const _subpath = window.location.pathname.replace(/\/$/, '').replace(/#.*$/, '');
-    const API_BASE = _subpath + '/api';
+    // Auto-detect sub-path (e.g. '/inventrack' when proxied, '' when direct).
+    // Segmen terakhir dibuang agar '/index.html' atau '/inventrack/index.html' tetap benar.
+    const API_BASE = window.location.pathname.replace(/\/[^/]*$/, '') + '/api';
 
     // --- Helpers ---
     function getToken() {
@@ -184,7 +184,7 @@ const Store = (() => {
 
     return {
         login, logout, getSession, isLoggedIn,
-        getToken, setToken, clearToken,
+        API_BASE, getToken, setToken, clearToken,
         getAssets, getAssetById, getAssetBySku,
         addAsset, updateAsset, deleteAsset,
         getCategories, getLocations,
