@@ -60,7 +60,7 @@ const App = (() => {
             </a>`;
         }).join('');
 
-        const initials = user ? user.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2) : '?';
+        const initials = user ? escapeHtml(user.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2)) : '?';
 
         return `
         <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
@@ -79,7 +79,7 @@ const App = (() => {
                     <div class="user-card">
                         <div class="user-avatar">${initials}</div>
                         <div class="user-info">
-                            <div class="user-name">${user ? user.name : 'Guest'}</div>
+                            <div class="user-name">${user ? escapeHtml(user.name) : 'Guest'}</div>
                             <div class="user-role">${user ? (user.role === 'admin' ? '⭐ Admin' : '🔧 Teknisi') : ''}</div>
                         </div>
                         <button class="btn-logout" id="btnLogout" title="Logout"><i class="fas fa-right-from-bracket"></i></button>
@@ -200,7 +200,8 @@ const App = (() => {
 
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span>`;
+        toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span></span>`;
+        toast.querySelector('span').textContent = message;
         container.appendChild(toast);
 
         setTimeout(() => {

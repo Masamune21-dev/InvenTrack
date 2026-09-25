@@ -1,15 +1,20 @@
-const express = require('express');
-const { queryAll, queryOne, execute, runTransaction } = require('../db');
+const { queryAll, queryOne, execute } = require('../db');
 const { authMiddleware, adminOnly } = require('./auth');
+const { createRouter, nowLocal, queryString } = require('../utils');
 
-const router = express.Router();
+const router = createRouter();
+
+const optionalString = (v) => v === undefined || v === null || typeof v === 'string';
+const isValidQuantity = (v) => Number.isInteger(v) && v >= 0;
 
 // All routes require auth
 router.use(authMiddleware);
 
 // GET /api/assets — list with optional search/filter
 router.get('/', async (req, res) => {
-    const { search, category, location } = req.query;
+    const search = queryString(req.query.search);
+    const category = queryString(req.query.category);
+    const location = queryString(req.query.location);
     let sql = 'SELECT * FROM assets WHERE 1=1';
     const params = [];
 
@@ -67,7 +72,7 @@ router.get('/meta/locations', async (req, res) => {
 
 // GET /api/assets/generate-sku
 router.get('/generate-sku', (req, res) => {
-    const { category } = req.query;
+    const category = queryString(req.query.category);
     const prefix = (category || 'ITM').substring(0, 3).toUpperCase();
     const num = Date.now().toString().slice(-6);
     res.json({ sku: `${prefix}-${num}` });
@@ -93,10 +98,16 @@ router.post('/', adminOnly, async (req, res) => {
     if (!name || !category || !location) {
         return res.status(400).json({ error: 'Nama, kategori, dan lokasi wajib diisi' });
     }
+    if (![name, category, location].every(v => typeof v === 'string') || !optionalString(sku) || !optionalString(condition)) {
+        return res.status(400).json({ error: 'Format data aset tidak valid' });
+    }
+    if (quantity !== undefined && quantity !== null && !isValidQuantity(quantity)) {
+        return res.status(400).json({ error: 'Jumlah harus bilangan bulat ≥ 0' });
+    }
 
     const id = 'a' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
     const finalSku = sku || (category.substring(0, 3).toUpperCase() + '-' + Date.now().toString().slice(-6));
-    const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    const now = nowLocal();
 
     try {
         await execute(
@@ -115,13 +126,19 @@ router.post('/', adminOnly, async (req, res) => {
     }
 });
 
-// PUT /api/assets/:id — update
-router.put('/:id', async (req, res) => {
+// PUT /api/assets/:id — update (admin only; staff mengubah stok lewat transaksi)
+router.put('/:id', adminOnly, async (req, res) => {
     const asset = await queryOne('SELECT * FROM assets WHERE id = ?', [req.params.id]);
     if (!asset) return res.status(404).json({ error: 'Aset tidak ditemukan' });
 
     const { name, category, sku, quantity, condition, location } = req.body;
-    const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    if (![name, category, sku, condition, location].every(optionalString)) {
+        return res.status(400).json({ error: 'Format data aset tidak valid' });
+    }
+    if (quantity !== undefined && quantity !== null && !isValidQuantity(quantity)) {
+        return res.status(400).json({ error: 'Jumlah harus bilangan bulat ≥ 0' });
+    }
+    const now = nowLocal();
 
     try {
         await execute(
@@ -136,13 +153,16 @@ router.put('/:id', async (req, res) => {
             WHERE id = ?`,
             [
                 name || null, category || null, sku || null,
-                quantity !== undefined ? quantity : null,
+                quantity ?? null,
                 condition || null, location || null, now, req.params.id
             ]
         );
         const updated = await queryOne('SELECT * FROM assets WHERE id = ?', [req.params.id]);
         res.json(updated);
     } catch (err) {
+        if (err.message && (err.message.includes('UNIQUE') || err.message.includes('Duplicate'))) {
+            return res.status(409).json({ error: 'SKU sudah ada. Gunakan SKU lain.' });
+        }
         res.status(500).json({ error: err.message });
     }
 });

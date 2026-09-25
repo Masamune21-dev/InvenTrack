@@ -187,14 +187,14 @@ const AssetsPage = (() => {
 
             tbody.innerHTML = assets.map(a => `
                 <tr>
-                    <td style="font-weight:600;color:var(--text-primary)">${a.name}</td>
-                    <td><code style="font-size:0.78rem;color:var(--accent-info);background:rgba(6,182,212,0.1);padding:2px 8px;border-radius:4px">${a.sku}</code></td>
-                    <td><span class="badge badge-primary">${a.category}</span></td>
+                    <td style="font-weight:600;color:var(--text-primary)">${escapeHtml(a.name)}</td>
+                    <td><code style="font-size:0.78rem;color:var(--accent-info);background:rgba(6,182,212,0.1);padding:2px 8px;border-radius:4px">${escapeHtml(a.sku)}</code></td>
+                    <td><span class="badge badge-primary">${escapeHtml(a.category)}</span></td>
                     <td>
                         <span class="badge ${a.quantity <= 2 ? 'badge-danger' : a.quantity <= 5 ? 'badge-warning' : 'badge-success'}">${a.quantity}</span>
                     </td>
-                    <td>${a.condition}</td>
-                    <td>${a.location}</td>
+                    <td>${escapeHtml(a.condition)}</td>
+                    <td>${escapeHtml(a.location)}</td>
                     <td style="white-space:nowrap;font-size:0.78rem">${formatDate(a.updated_at || a.updatedAt)}</td>
                     <td>
                         <div style="display:flex;gap:4px">
@@ -214,7 +214,7 @@ const AssetsPage = (() => {
                 </tr>
             `).join('');
         } catch (e) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--accent-danger);padding:24px">Gagal memuat data: ${e.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--accent-danger);padding:24px">Gagal memuat data: ${escapeHtml(e.message)}</td></tr>`;
         }
     }
 
@@ -244,8 +244,8 @@ const AssetsPage = (() => {
                     filterLoc.appendChild(opt);
                 });
             }
-            if (catList) catList.innerHTML = cachedCategories.map(c => `<option value="${c}">`).join('');
-            if (locList) locList.innerHTML = cachedLocations.map(l => `<option value="${l}">`).join('');
+            if (catList) catList.innerHTML = cachedCategories.map(c => `<option value="${escapeHtml(c)}">`).join('');
+            if (locList) locList.innerHTML = cachedLocations.map(l => `<option value="${escapeHtml(l)}">`).join('');
         } catch (e) { console.error('Filter load error:', e); }
     }
 
@@ -396,7 +396,7 @@ const AssetsPage = (() => {
         if (!asset) return;
         const confirmed = await Dialog.confirm({
             title: 'Hapus Aset?',
-            message: `Aset <strong>"${asset.name}"</strong> akan dihapus secara permanen.<br>Aksi ini tidak bisa dibatalkan.`,
+            message: `Aset <strong>"${escapeHtml(asset.name)}"</strong> akan dihapus secara permanen.<br>Aksi ini tidak bisa dibatalkan.`,
             type: 'delete',
             confirmText: 'Ya, Hapus',
             cancelText: 'Batal'

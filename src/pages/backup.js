@@ -128,8 +128,7 @@ const BackupPage = (() => {
             try {
                 App.showToast('Menyiapkan backup...', 'info');
                 const token = Store.getToken();
-                const _base = window.location.pathname.replace(/\/$/, '');
-                const res = await fetch(_base + '/api/backup/download', {
+                const res = await fetch(Store.API_BASE + '/backup/download', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!res.ok) throw new Error('Gagal download');
@@ -215,8 +214,7 @@ const BackupPage = (() => {
                 const formData = new FormData();
                 formData.append('database', file);
 
-                const _base2 = window.location.pathname.replace(/\/$/, '');
-                const res = await fetch(_base2 + '/api/backup/restore', {
+                const res = await fetch(Store.API_BASE + '/backup/restore', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData

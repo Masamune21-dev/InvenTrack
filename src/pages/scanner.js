@@ -190,7 +190,7 @@ const ScannerPage = (() => {
                 <div style="text-align:center;padding:20px">
                     <i class="fas fa-circle-xmark" style="font-size:2.5rem;color:var(--accent-danger);margin-bottom:12px;display:block"></i>
                     <h4 style="color:var(--accent-danger);margin-bottom:4px">Tidak Ditemukan</h4>
-                    <p style="font-size:0.85rem;color:var(--text-secondary)">Kode "<strong>${code}</strong>" tidak cocok dengan aset manapun</p>
+                    <p style="font-size:0.85rem;color:var(--text-secondary)">Kode "<strong>${escapeHtml(code)}</strong>" tidak cocok dengan aset manapun</p>
                 </div>`;
             App.showToast('Aset tidak ditemukan: ' + code, 'warning');
             return;
@@ -201,15 +201,15 @@ const ScannerPage = (() => {
 
         resultDiv.innerHTML = `
             <div class="scan-result-card">
-                <div class="asset-name">${asset.name}</div>
-                <div class="asset-sku"><i class="fas fa-barcode" style="margin-right:4px"></i>${asset.sku}</div>
-                <div class="detail-row"><span class="label">Kategori</span><span class="value"><span class="badge badge-primary">${asset.category}</span></span></div>
+                <div class="asset-name">${escapeHtml(asset.name)}</div>
+                <div class="asset-sku"><i class="fas fa-barcode" style="margin-right:4px"></i>${escapeHtml(asset.sku)}</div>
+                <div class="detail-row"><span class="label">Kategori</span><span class="value"><span class="badge badge-primary">${escapeHtml(asset.category)}</span></span></div>
                 <div class="detail-row"><span class="label">Stok</span><span class="value"><span class="badge ${asset.quantity <= 5 ? 'badge-warning' : 'badge-success'}">${asset.quantity} unit</span></span></div>
-                <div class="detail-row"><span class="label">Kondisi</span><span class="value">${asset.condition}</span></div>
-                <div class="detail-row"><span class="label">Lokasi</span><span class="value">${asset.location}</span></div>
+                <div class="detail-row"><span class="label">Kondisi</span><span class="value">${escapeHtml(asset.condition)}</span></div>
+                <div class="detail-row"><span class="label">Lokasi</span><span class="value">${escapeHtml(asset.location)}</span></div>
                 <div class="detail-row"><span class="label">Terakhir Update</span><span class="value">${formatDateTime(asset.updated_at || asset.updatedAt)}</span></div>
                 <div class="quick-actions">
-                    <button class="btn btn-ghost btn-sm" onclick="ScannerPage.openQuickEdit()"><i class="fas fa-pen"></i> Edit Stok</button>
+                    ${Auth.isAdmin() ? `<button class="btn btn-ghost btn-sm" onclick="ScannerPage.openQuickEdit()"><i class="fas fa-pen"></i> Edit Stok</button>` : ''}
                     <button class="btn btn-warning btn-sm" onclick="ScannerPage.quickCheckout()"><i class="fas fa-arrow-up"></i> Check-out</button>
                     <button class="btn btn-success btn-sm" onclick="ScannerPage.quickCheckin()"><i class="fas fa-arrow-down"></i> Check-in</button>
                     <button class="btn btn-ghost btn-sm" onclick="AssetsPage.showBarcode('${asset.id}')"><i class="fas fa-print"></i> Cetak</button>

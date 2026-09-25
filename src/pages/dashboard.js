@@ -152,8 +152,8 @@ const DashboardPage = (() => {
                 el.innerHTML = lowStock.map(a => `
                     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
                         <div>
-                            <div style="font-size:0.85rem;font-weight:600;color:var(--text-primary)">${a.name}</div>
-                            <div style="font-size:0.75rem;color:var(--text-muted)">${a.location}</div>
+                            <div style="font-size:0.85rem;font-weight:600;color:var(--text-primary)">${escapeHtml(a.name)}</div>
+                            <div style="font-size:0.75rem;color:var(--text-muted)">${escapeHtml(a.location)}</div>
                         </div>
                         <span class="badge ${a.quantity <= 2 ? 'badge-danger' : 'badge-warning'}">${a.quantity} unit</span>
                     </div>
@@ -175,10 +175,10 @@ const DashboardPage = (() => {
                     <tr>
                         <td style="white-space:nowrap">${formatDateTime(t.createdAt)}</td>
                         <td><span class="badge ${t.type === 'check-in' ? 'badge-success' : 'badge-warning'}">${t.type === 'check-in' ? '↓ Masuk' : '↑ Keluar'}</span></td>
-                        <td style="font-weight:500;color:var(--text-primary)">${t.assetName}</td>
+                        <td style="font-weight:500;color:var(--text-primary)">${escapeHtml(t.assetName)}</td>
                         <td>${t.quantity}</td>
-                        <td>${t.user}</td>
-                        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.note || '-'}</td>
+                        <td>${escapeHtml(t.user)}</td>
+                        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(t.note || '-')}</td>
                     </tr>
                 `).join('');
             }

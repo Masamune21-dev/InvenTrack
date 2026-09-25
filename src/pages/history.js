@@ -100,14 +100,14 @@ const HistoryPage = (() => {
                             ${t.type === 'check-in' ? '<i class="fas fa-arrow-down" style="margin-right:4px"></i>Masuk' : '<i class="fas fa-arrow-up" style="margin-right:4px"></i>Keluar'}
                         </span>
                     </td>
-                    <td style="font-weight:500;color:var(--text-primary)">${t.assetName}</td>
+                    <td style="font-weight:500;color:var(--text-primary)">${escapeHtml(t.assetName)}</td>
                     <td><strong>${t.quantity}</strong></td>
-                    <td>${t.user}</td>
-                    <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.note || '-'}</td>
+                    <td>${escapeHtml(t.user)}</td>
+                    <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(t.note || '-')}</td>
                 </tr>
             `).join('');
         } catch (e) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--accent-danger);padding:24px">Gagal memuat: ${e.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--accent-danger);padding:24px">Gagal memuat: ${escapeHtml(e.message)}</td></tr>`;
         }
     }
 
